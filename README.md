@@ -12,15 +12,10 @@ Then run:
 $ perl minion_ui.pl daemon
 ```
 
-## Minion View
+## Dashboard
 
-<img  align="middle" src="http://bmedley.org/minion_ui_minion.png" width="50%" height="50%">
+<img  align="middle" src="http://bmedley.org/minion_ui_dashboard.png" width="50%" height="50%">
 
-<hr>
-
-## Workers View
-
-<img  align="middle" src="http://bmedley.org/minion_ui_workers.png" width="50%" height="50%">
 
 Released under the same terms as Perl itself.
 
