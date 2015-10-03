@@ -11,3 +11,7 @@ Then run:
 ```
 $ perl minion_ui.pl daemon
 ```
+
+Released under the same terms as Perl itself.
+
+Copyright (c) 2015 Brian Medley
