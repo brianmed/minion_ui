@@ -301,6 +301,10 @@ __DATA__
                     function updWorkerData() {
                         if ("Dashboard" === app.view().title) {
                             $.getJSON("<%= url_for("/v1/minion/stats") %>", function(result) {
+                                var template = kendo.template($('#dashboard-template').text());
+                                var html = template(result) 
+                                $('#dashboard-header').html(html);
+
                                 if (null != app.view().model.workerGraph) {
                                     var data = [
                                         { time: result.epoch, y: result.active_workers },
