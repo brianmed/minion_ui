@@ -93,6 +93,11 @@ __DATA__
 </head>
 <body>
 
+<div data-role="view" id="tabstrip-dashboard" data-title="Dashboard" data-layout="mobile-tabstrip" data-model="model.dashboard" data-show="model.dashboard.show" data-init="model.dashboard.init">
+    <h3><b>Inactive and Active Workers</b></h3>
+    <div id="minionWorker" class="epoch" style="height: 200px; margin-top: 20px;"></div>
+</div>
+
 <div data-role="view" id="tabstrip-minion" data-title="Minion" data-layout="mobile-tabstrip" data-model="model.minion" data-init="model.common.init">
     <ul id="listview-minion">
         <script type="text/x-kendo-template" id="listview-minion-template">
@@ -127,11 +132,6 @@ __DATA__
     </ul>
 </div>
 
-<div data-role="view" id="tabstrip-graphs" data-title="Graphs" data-layout="mobile-tabstrip" data-model="model.graphs" data-show="model.graphs.show" data-init="model.graphs.init">
-    <h3><b>Inactive and Active Workers</b></h3>
-    <div id="minionWorker" class="epoch" style="height: 200px; margin-top: 20px;"></div>
-</div>
-
 <div data-role="layout" data-id="mobile-tabstrip">
     <header data-role="header">
         <div data-role="navbar">
@@ -143,10 +143,10 @@ __DATA__
 
     <div data-role="footer">
         <div data-role="tabstrip">
+            <a href="#tabstrip-dashboard" data-icon="globe">Dashboard</a>
             <a href="#tabstrip-minion" data-icon="share">Minion</a>
             <a href="#tabstrip-workers" data-icon="settings">Workers</a>
             <a href="#tabstrip-jobs" data-icon="history">Jobs</a>
-            <a href="#tabstrip-graphs" data-icon="globe">Graphs</a>
         </div>
     </div>
 </div>
@@ -242,7 +242,7 @@ __DATA__
             })
         },
 
-        graphs: {
+        dashboard: {
             workerGraph: null,
 
             init: function(e) {
@@ -250,7 +250,7 @@ __DATA__
                     updWorkerData();
 
                     function updWorkerData() {
-                        if ("Graphs" === app.view().title) {
+                        if ("Dashboard" === app.view().title) {
                             $.getJSON("<%= url_for("/v1/minion/stats") %>", function(result) {
                                 var data = [
                                     { time: result.epoch, y: result.active_workers },
