@@ -12,9 +12,13 @@ Then run:
 $ perl minion_ui.pl daemon
 ```
 
+## Minion View
+
 <p align="center">
 <img  align="middle" src="http://bmedley.org/minion_ui_minion.png" width="50%" height="50%">
 </p>
+
+## Workers View
 
 <p align="center">
 <img  align="middle" src="http://bmedley.org/minion_ui_workers.png" width="50%" height="50%">
