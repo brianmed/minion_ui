@@ -20,9 +20,9 @@ get '/v1/minion/stats' => sub {
     my $ret = { 
         inactive_workers => $stats->{inactive_workers},
         active_workers => $stats->{active_workers},
-        active_jobs => $stats->{active_jobs},
-        failed_jobs => $stats->{failed_jobs},
-        finished_jobs => $stats->{finished_jobs},
+        active_jobs => int($stats->{active_jobs}),
+        failed_jobs => int($stats->{failed_jobs}),
+        finished_jobs => int($stats->{finished_jobs}),
         epoch => time,
     };
 
@@ -67,6 +67,8 @@ get '/v1/jobs/stats' => sub {
             task => $job->{task},
             queue => $job->{queue},
         });
+
+        last if 30 <= @{ $ret };
     }
 
     $c->render(json => $ret);
@@ -84,6 +86,7 @@ __DATA__
     <title></title>
     <link rel="stylesheet" href="http://kendo.cdn.telerik.com/2015.3.930/styles/kendo.mobile.all.min.css" />
     <link rel="stylesheet" href="/epoch.min.css" />
+    <link rel="stylesheet" href="/style.css" />
 
     <script src="http://kendo.cdn.telerik.com/2015.3.930/js/jquery.min.js"></script>
     <script src="http://kendo.cdn.telerik.com/2015.3.930/js/kendo.ui.core.min.js"></script>
@@ -94,8 +97,52 @@ __DATA__
 <body>
 
 <div data-role="view" id="tabstrip-dashboard" data-title="Dashboard" data-layout="mobile-tabstrip" data-model="model.dashboard" data-show="model.dashboard.show" data-init="model.dashboard.init">
+    <script type="text/x-kendo-template" id="dashboard-template">
+        <center>
+        <table>
+            <tr><td>Finished Jobs</td><td>Failed Jobs</td><td>Active Jobs</td><td>Active Workers</td><td>Inactive Workers</td></tr>
+            <tr><td>${finished_jobs}</td><td>${failed_jobs}</td><td>${active_jobs}</td><td>${active_workers}</td><td>${inactive_workers}</td></tr>
+        </table>
+        </center>
+    </script>
+
+    <div id="dashboard-header">
+    </div>
+
     <h3><b>Inactive and Active Workers</b></h3>
-    <div id="minionWorker" class="epoch" style="height: 200px; margin-top: 20px;"></div>
+    <div id="minionWorker" class="epoch" style="height: 200px; margin-top: 15px;" class="epoch"></div>
+
+    <div class='legend' style="margin-left: 20px;">
+    <div class='legend-scale'>
+      <ul class='legend-labels'>
+        <li><span style='background:#ff7f0e;'></span>Inactive</li>
+        <li><span style='background:#1f77b4;'></span>Active</li>
+      </ul>
+    </div>
+    </div>
+
+    <h3 style="margin-top: 20px;"><b>Active Jobs</b></h3>
+    <div id="minionActiveJobs" class="epoch" style="height: 200px; margin-top: 15px;" class="epoch"></div>
+
+    <div class='legend' style="margin-left: 20px;">
+    <div class='legend-scale'>
+      <ul class='legend-labels'>
+        <li><span style='background:#1f77b4;'></span>Active</li>
+      </ul>
+    </div>
+    </div>
+
+    <h3><b>Finished and Failed Jobs</b></h3>
+    <div id="minionOtherJobs" class="epoch" style="height: 200px; margin-top: 15px;" class="epoch"></div>
+
+    <div class='legend' style="margin-left: 20px;">
+    <div class='legend-scale'>
+      <ul class='legend-labels'>
+        <li><span style='background:#ff7f0e;'></span>Finished</li>
+        <li><span style='background:#1f77b4;'></span>Failed</li>
+      </ul>
+    </div>
+    </div>
 </div>
 
 <div data-role="view" id="tabstrip-minion" data-title="Minion" data-layout="mobile-tabstrip" data-model="model.minion" data-init="model.common.init">
@@ -244,6 +291,8 @@ __DATA__
 
         dashboard: {
             workerGraph: null,
+            minionActiveJobs: null,
+            minionOtherJobs: null,
 
             init: function(e) {
                 $(function() {
@@ -252,12 +301,30 @@ __DATA__
                     function updWorkerData() {
                         if ("Dashboard" === app.view().title) {
                             $.getJSON("<%= url_for("/v1/minion/stats") %>", function(result) {
-                                var data = [
-                                    { time: result.epoch, y: result.active_workers },
-                                    { time: result.epoch, y: result.inactive_workers } 
-                                ];
                                 if (null != app.view().model.workerGraph) {
+                                    var data = [
+                                        { time: result.epoch, y: result.active_workers },
+                                        { time: result.epoch, y: result.inactive_workers },
+                                    ];
+
                                     app.view().model.workerGraph.push(data);
+                                }
+
+                                if (null != app.view().model.minionActiveJobs) {
+                                    var data = [
+                                        { time: result.epoch, y: result.active_jobs }
+                                    ];
+
+                                    app.view().model.minionActiveJobs.push(data);
+                                }
+
+                                if (null != app.view().model.minionOtherJobs) {
+                                    var data = [
+                                        { time: result.epoch, y: result.failed_jobs },
+                                        { time: result.epoch, y: result.finished_jobs },
+                                    ];
+
+                                    app.view().model.minionOtherJobs.push(data);
                                 }
                             });
                         }
@@ -269,6 +336,12 @@ __DATA__
 
             show: function(e) {
                 var model = e.view.model;
+
+                $.getJSON("<%= url_for("/v1/minion/stats") %>", function(result) {
+                    var template = kendo.template($('#dashboard-template').text());
+                    var result = template(result) 
+                    $('#dashboard-header').html(result);
+                });
 
                 $.getJSON("<%= url_for("/v1/minion/stats") %>", function(result) {
                     model.workerGraph = $('#minionWorker').epoch({
@@ -285,13 +358,39 @@ __DATA__
                             } 
                         ]
                     });
+
+                    model.minionActiveJobs = $('#minionActiveJobs').epoch({
+                        type: 'time.line',
+                        axes: ['left', 'bottom', 'right'],
+                        data: [
+                            {
+                                label: "Active",
+                                values: [ { time: result.epoch, y: result.active_jobs } ]
+                            }
+                        ]
+                    });
+
+                    model.minionOtherJobs = $('#minionOtherJobs').epoch({
+                        type: 'time.area',
+                        axes: ['left', 'bottom', 'right'],
+                        data: [
+                            {
+                                label: "Failed",
+                                values: [ { time: result.epoch, y: result.failed_jobs } ]
+                            },
+                            {
+                                label: "Finished",
+                                values: [ { time: result.epoch, y: result.finished_jobs } ]
+                            },
+                        ]
+                    });
                 });
             },
         },
     });
 
     var app = new kendo.mobile.Application(document.body, { 
-        skin: "nova",
+        skin: "flat",
 
         init: function () {
             kendo.bind($("#tabstrip-minion"), model.minion);
