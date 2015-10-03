@@ -2,6 +2,8 @@
 
 use Mojolicious::Lite;
 
+use Mojo::JSON qw(encode_json);
+
 plugin Minion => {Pg => "postgresql://$ENV{DBI_USER}:$ENV{DBI_PASS}\@127.0.0.1/jobs"};
 
 get '/' => sub {
@@ -14,19 +16,20 @@ get '/v1/minion/stats' => sub {
     my $c = shift;
 
     my $stats = $c->app->minion->stats;
-    my $ret = [ 
-        { text => "Inactive Workers", value => $stats->{inactive_workers} },
-        { text => "Active Workers", value => $stats->{active_workers} },
-        { text => "Inactive Jobs", value => $stats->{inactive_jobs} },
-        { text => "Active Jobs", value => $stats->{active_jobs} },
-        { text => "Failed Jobs", value => $stats->{failed_jobs} },
-        { text => "Finished Jobs", value => $stats->{finished_jobs} },
-    ];
+
+    my $ret = { 
+        inactive_workers => $stats->{inactive_workers},
+        active_workers => $stats->{active_workers},
+        active_jobs => $stats->{active_jobs},
+        failed_jobs => $stats->{failed_jobs},
+        finished_jobs => $stats->{finished_jobs},
+        epoch => time,
+    };
 
     $c->render(json => $ret);
 };
 
-get '/v1/worker/stats' => sub {
+get '/v1/workers/stats' => sub {
     my $c = shift;
 
     my $stats = $c->app->minion->backend->list_workers(@_);
@@ -36,10 +39,12 @@ get '/v1/worker/stats' => sub {
     my $ret = [];
 
     foreach my $worker (@{ $stats }) {
-        push(@{ $ret }, { text => sprintf("[%s] %s PID [%s]", $worker->{id}, $worker->{host}, $worker->{pid}) });
+        push(@{ $ret }, { 
+            id => $worker->{id},
+            host => $worker->{host},
+            pid => $worker->{pid},
+        });
     }
-
-    push(@{ $ret }, { text => "No workers" }) unless @{$ret};
 
     $c->render(json => $ret);
 };
@@ -78,9 +83,13 @@ __DATA__
 <head>
     <title></title>
     <link rel="stylesheet" href="http://kendo.cdn.telerik.com/2015.3.930/styles/kendo.mobile.all.min.css" />
+    <link rel="stylesheet" href="/epoch.min.css" />
 
     <script src="http://kendo.cdn.telerik.com/2015.3.930/js/jquery.min.js"></script>
     <script src="http://kendo.cdn.telerik.com/2015.3.930/js/kendo.ui.core.min.js"></script>
+
+    <script src="/d3.min.js"></script>
+    <script src="/epoch.min.js"></script>
 </head>
 <body>
 
@@ -95,7 +104,11 @@ __DATA__
 <div data-role="view" id="tabstrip-workers" data-title="Workers" data-layout="mobile-tabstrip" data-model="model.workers" data-init="model.common.init">
     <ul id="listview-workers">
         <script type="text/x-kendo-template" id="listview-workers-template">
-            #: text #
+            # if (data.text) { #
+                #: data.text #
+            # } else { #
+                [#: id #] #: host # [#:pid#]
+            # } #
         </script>
     </ul>
 </div>
@@ -103,14 +116,22 @@ __DATA__
 <div data-role="view" id="tabstrip-jobs" data-title="Jobs" data-layout="mobile-tabstrip" data-model="model.jobs" data-init="model.common.init">
     <ul id="listview-jobs">
         <script type="text/x-kendo-template" id="listview-jobs-template">
-            #: id #: #: task # [#: queue #]<br>
-            State: #: state #<br>
-            Args: <code>#: args #</code>
+            # if (data.text) { #
+                #: data.text #
+            # } else { #
+                #: id #: #: task # [#: queue #]<br>
+                State: #: state #<br>
+                Args: <code>#: args #</code>
+            # } #
         </script>
     </ul>
 </div>
 
-<div data-role="layout" data-id="mobile-tabstrip" data-show="showDemoLayout">
+<div data-role="view" id="tabstrip-graphs" data-title="Graphs" data-layout="mobile-tabstrip" data-model="model.graphs" data-show="model.graphs.show" data-init="model.graphs.init">
+    <div id="minionWorker" class="epoch" style="height: 200px; margin-top: 20px;"></div>
+</div>
+
+<div data-role="layout" data-id="mobile-tabstrip">
     <header data-role="header">
         <div data-role="navbar">
             <span data-role="view-title"></span>
@@ -124,6 +145,7 @@ __DATA__
             <a href="#tabstrip-minion" data-icon="share">Minion</a>
             <a href="#tabstrip-workers" data-icon="settings">Workers</a>
             <a href="#tabstrip-jobs" data-icon="history">Jobs</a>
+            <a href="#tabstrip-graphs" data-icon="globe">Graphs</a>
         </div>
     </div>
 </div>
@@ -155,6 +177,17 @@ __DATA__
                     read: {
                         url: "<%= url_for('/v1/minion/stats')->to_abs %>",
                     }
+                },
+                schema: {
+                    data: function(response) {
+                        return [
+                            { text: "Inactive Workers", value: response.inactive_workers },
+                            { text: "Active Workers", value: response.active_workers },
+                            { text: "Active Jobs", value: response.active_jobs },
+                            { text: "Failed Jobs", value: response.failed_jobs },
+                            { text: "Finished Jobs", value: response.finished_jobs }
+                        ];
+                    }
                 }
             }),
         },
@@ -169,6 +202,25 @@ __DATA__
                 transport: {
                     read: {
                         url: "<%= url_for('/v1/workers/stats')->to_abs %>",
+                    }
+                },
+                schema: {
+                    data: function(response) {
+                        var ret = [];
+
+                        $.each(response, function(idx, value) {
+                            ret.push({
+                                id: value.id,
+                                host: value.host,
+                                pid: value.pid,
+                            });
+                        });
+
+                        if (0 === ret.length) {
+                            return [{ text: "No workers" }];
+                        }
+
+                        return ret;
                     }
                 }
             }),
@@ -187,6 +239,53 @@ __DATA__
                     }
                 }
             })
+        },
+
+        graphs: {
+            workerGraph: null,
+
+            init: function(e) {
+                $(function() {
+                    updWorkerData();
+
+                    function updWorkerData() {
+                        if ("Graphs" === app.view().title) {
+                            $.getJSON("<%= url_for("/v1/minion/stats") %>", function(result) {
+                                var data = [
+                                    { time: result.epoch, y: result.active_workers },
+                                    { time: result.epoch, y: result.inactive_workers } 
+                                ];
+                                if (null != app.view().model.workerGraph) {
+                                    app.view().model.workerGraph.push(data);
+                                }
+                            });
+                        }
+
+                        setTimeout(updWorkerData, 3000);
+                    }
+                });
+            },
+
+            show: function(e) {
+                var model = e.view.model;
+
+                $.getJSON("<%= url_for("/v1/minion/stats") %>", function(result) {
+                    model.workerGraph = $('#minionWorker').epoch({
+                        type: 'time.line',
+                        axes: ['left', 'bottom', 'right'],
+                        data: [
+                            {
+                                label: "Active",
+                                values: [ { time: result.epoch, y: result.active_workers } ]
+                            },
+                            {
+                                label: "Inactive",
+                                values: [ { time: result.epoch, y: result.inactive_workers } ]
+                            } 
+                        ]
+                    });
+                });
+            },
         },
     });
 
