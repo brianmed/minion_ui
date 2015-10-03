@@ -128,6 +128,7 @@ __DATA__
 </div>
 
 <div data-role="view" id="tabstrip-graphs" data-title="Graphs" data-layout="mobile-tabstrip" data-model="model.graphs" data-show="model.graphs.show" data-init="model.graphs.init">
+    <h3><b>Inactive and Active Workers</b></h3>
     <div id="minionWorker" class="epoch" style="height: 200px; margin-top: 20px;"></div>
 </div>
 
