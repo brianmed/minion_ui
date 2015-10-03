@@ -1,5 +1,4 @@
-# minion_ui
-Mojolicious::Lite Minion UI
+# Mojolicious::Lite Minion UI
 
 To get started edit this line to suite your needs:
 
