@@ -12,6 +12,14 @@ Then run:
 $ perl minion_ui.pl daemon
 ```
 
+<p align="center">
+<img  align="middle" src="http://bmedley.org/minion_ui_minion.png" width="50%" height="50%">
+</p>
+
+<p align="center">
+<img  align="middle" src="http://bmedley.org/minion_ui_workers.png" width="50%" height="50%">
+</p>
+
 Released under the same terms as Perl itself.
 
 Copyright (c) 2015 Brian Medley
