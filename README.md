@@ -19,6 +19,7 @@ $ perl minion_ui.pl daemon
 </p>
 
 ## Workers View
+<br>
 
 <p align="center">
 <img  align="middle" src="http://bmedley.org/minion_ui_workers.png" width="50%" height="50%">
