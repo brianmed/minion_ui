@@ -165,14 +165,6 @@ __DATA__
       </ul>
     </div>
     </div>
-</div>
-
-<div data-role="view" id="tabstrip-minion" data-title="Minion" data-layout="mobile-tabstrip" data-model="model.minion" data-init="model.minion.init">
-    <ul id="listview-minion">
-        <script type="text/x-kendo-template" id="listview-minion-template">
-            #: text #: #: value #
-        </script>
-    </ul>
 
     <center><p><h1>Workers</h1></p></center>
 
@@ -268,7 +260,6 @@ __DATA__
     <div data-role="footer">
         <div data-role="tabstrip">
             <a href="#tabstrip-dashboard" data-icon="globe">Dashboard</a>
-            <a href="#tabstrip-minion" data-icon="share">Minion</a>
             <a href="#tabstrip-jobs" data-icon="history">Jobs</a>
             <a href="#tabstrip-actions" data-icon="action">Actions</a>
         </div>
@@ -277,88 +268,6 @@ __DATA__
 
 <script>
     var model = kendo.observable({
-        minion: {
-            init: function(e) {
-                var m = e.view.model;
-                var id = m.listview.id;
-                var template = m.listview.template;
-
-                $(id).kendoMobileListView({
-                    dataSource: m.dataSource,
-                    pullToRefresh: true,            
-                    template: $(template).text(),
-                });
-
-                m = model.workers;
-                var id = m.listview.id;
-                var template = m.listview.template;
-
-                $(id).kendoMobileListView({
-                    dataSource: m.dataSource,
-                    pullToRefresh: true,            
-                    template: $(template).text(),
-                });
-            },
-
-            listview: {
-                id: "#listview-minion",
-                template: "#listview-minion-template",
-            },
-
-            dataSource: new kendo.data.DataSource({
-                transport: {
-                    read: {
-                        url: "<%= url_for('/v1/minion/stats')->to_abs %>",
-                    }
-                },
-                schema: {
-                    data: function(response) {
-                        return [
-                            { text: "Inactive Workers", value: response.inactive_workers },
-                            { text: "Active Workers", value: response.active_workers },
-                            { text: "Active Jobs", value: response.active_jobs },
-                            { text: "Failed Jobs", value: response.failed_jobs },
-                            { text: "Finished Jobs", value: response.finished_jobs }
-                        ];
-                    }
-                }
-            }),
-        },
-
-        workers: {
-            listview: {
-                id: "#listview-workers",
-                template: "#listview-workers-template",
-            },
-
-            dataSource: new kendo.data.DataSource({
-                transport: {
-                    read: {
-                        url: "<%= url_for('/v1/workers/stats')->to_abs %>",
-                    }
-                },
-                schema: {
-                    data: function(response) {
-                        var ret = [];
-
-                        $.each(response, function(idx, value) {
-                            ret.push({
-                                id: value.id,
-                                host: value.host,
-                                pid: value.pid,
-                            });
-                        });
-
-                        if (0 === ret.length) {
-                            return [{ text: "No workers" }];
-                        }
-
-                        return ret;
-                    }
-                }
-            }),
-        },
-
         jobs: {
             init: function(e) {
                 var model = e.view.model;
@@ -503,11 +412,9 @@ __DATA__
 
                 $.getJSON("<%= url_for("/v1/minion/stats") %>", function(result) {
                     var template = kendo.template($('#dashboard-template').text());
-                    var result = template(result) 
-                    $('#dashboard-header').html(result);
-                });
+                    var html = template(result) 
+                    $('#dashboard-header').html(html);
 
-                $.getJSON("<%= url_for("/v1/minion/stats") %>", function(result) {
                     model.workerGraph = $('#minionWorker').epoch({
                         type: 'time.line',
                         axes: ['left', 'bottom', 'right'],
@@ -549,18 +456,55 @@ __DATA__
                         ]
                     });
                 });
+
+                var m = model.workers;
+                var id = m.listview.id;
+                var template = m.listview.template;
+
+                $(id).kendoMobileListView({
+                    dataSource: m.dataSource,
+                    template: $(template).text(),
+                });
+            },
+
+            workers: {
+                listview: {
+                    id: "#listview-workers",
+                    template: "#listview-workers-template",
+                },
+
+                dataSource: new kendo.data.DataSource({
+                    transport: {
+                        read: {
+                            url: "<%= url_for('/v1/workers/stats')->to_abs %>",
+                        }
+                    },
+                    schema: {
+                        data: function(response) {
+                            var ret = [];
+
+                            $.each(response, function(idx, value) {
+                                ret.push({
+                                    id: value.id,
+                                    host: value.host,
+                                    pid: value.pid,
+                                });
+                            });
+
+                            if (0 === ret.length) {
+                                return [{ text: "No workers" }];
+                            }
+
+                            return ret;
+                        }
+                    }
+                }),
             },
         },
     });
 
     var app = new kendo.mobile.Application(document.body, { 
         skin: "nova",
-
-        init: function () {
-            kendo.bind($("#tabstrip-minion"), model.minion);
-            kendo.bind($("#tabstrip-workers"), model.workers);
-            kendo.bind($("#tabstrip-jobs"), model.jobs);
-        }
     });
 </script>
 </body>
