@@ -365,44 +365,88 @@ __DATA__
 
             init: function(e) {
                 $(function() {
+                    var inAjax = false;
+                    var whence = (new Date()).getTime() - 4000; // start immediately
+
+                    var workerData = {
+                        workerGraph: null,
+                        minionActiveJobs: null,
+                        workerOtherJobs: null,
+                    };
+
                     updWorkerData();
 
                     function updWorkerData() {
-                        if ("Dashboard" === app.view().title) {
-                            $.getJSON("<%= url_for("/v1/minion/stats") %>", function(result) {
-                                var template = kendo.template($('#dashboard-template').text());
-                                var html = template(result) 
-                                $('#dashboard-header').html(html);
+                        var n = (new Date()).getTime() - whence;
 
-                                if (null != app.view().model.workerGraph) {
-                                    var data = [
-                                        { time: result.epoch, y: result.active_workers },
-                                        { time: result.epoch, y: result.inactive_workers },
-                                    ];
+                        if ("Dashboard" === app.view().title && !inAjax && n >= 3000) {
+                            whence = (new Date()).getTime();
 
-                                    app.view().model.workerGraph.push(data);
-                                }
+                            $.ajax({
+                                url: "<%= url_for("/v1/minion/stats") %>",
+                                dataType: 'json',
+                                async: true,
+                                success: function(result) {
+                                    var template = kendo.template($('#dashboard-template').text());
+                                    var html = template(result) 
+                                    $('#dashboard-header').html(html);
 
-                                if (null != app.view().model.minionActiveJobs) {
-                                    var data = [
-                                        { time: result.epoch, y: result.active_jobs }
-                                    ];
+                                    if (null != app.view().model.workerGraph) {
+                                        var data = [
+                                            { time: result.epoch, y: result.active_workers },
+                                            { time: result.epoch, y: result.inactive_workers },
+                                        ];
 
-                                    app.view().model.minionActiveJobs.push(data);
-                                }
+                                        workerData.workerGraph = data;
 
-                                if (null != app.view().model.minionOtherJobs) {
-                                    var data = [
-                                        { time: result.epoch, y: result.failed_jobs },
-                                        { time: result.epoch, y: result.finished_jobs },
-                                    ];
+                                        app.view().model.workerGraph.push(data);
+                                    }
 
-                                    app.view().model.minionOtherJobs.push(data);
+                                    if (null != app.view().model.minionActiveJobs) {
+                                        var data = [
+                                            { time: result.epoch, y: result.active_jobs }
+                                        ];
+
+                                        workerData.minionActiveJobs = data;
+
+                                        app.view().model.minionActiveJobs.push(data);
+                                    }
+
+                                    if (null != app.view().model.minionOtherJobs) {
+                                        var data = [
+                                            { time: result.epoch, y: result.failed_jobs },
+                                            { time: result.epoch, y: result.finished_jobs },
+                                        ];
+
+                                        workerData.minionOtherJobs = data;
+
+                                        app.view().model.minionOtherJobs.push(data);
+                                    }
+
+                                    inAjax = false;
+                                },
+                                error: function() {
+                                    inAjax = false;
                                 }
                             });
                         }
+                        else if ("Dashboard" === app.view().title) {
+                            var m = app.view().model;
 
-                        setTimeout(updWorkerData, 3000);
+                            if (m.workerGraph && workerData.workerGraph) {
+                                m.workerGraph.push(workerData.workerGraph);
+                            }
+
+                            if (m.minionActiveJobs && workerData.minionActiveJobs) {
+                                m.minionActiveJobs.push(workerData.minionActiveJobs);
+                            }
+
+                            if (m.minionOtherJobs && workerData.minionOtherJobs) {
+                                m.minionOtherJobs.push(workerData.minionOtherJobs);
+                            }
+                        }
+
+                        setTimeout(updWorkerData, 300);
                     }
                 });
             },
