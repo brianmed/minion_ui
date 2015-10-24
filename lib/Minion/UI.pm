@@ -14,7 +14,10 @@ sub startup {
 
   $r->get('/' => {template => 'minion_ui'});
 
-  $r->get('/v1/minion/stats' => sub {
+  my $api = $r->any('/api/v1');
+  my $stats = $api->any('/stats');
+
+  $stats->get('/minion')->name('stats_minion')->to(cb => sub {
     my $c = shift;
 
     my $stats = $c->app->minion->stats;
@@ -31,7 +34,7 @@ sub startup {
     $c->render(json => $ret);
   });
 
-  $r->get('/v1/workers/stats' => sub {
+  $stats->get('/workers')->name('stats_workers')->to(cb => sub {
     my $c = shift;
 
     my $stats = $c->app->minion->backend->list_workers(@_);
@@ -51,7 +54,7 @@ sub startup {
     $c->render(json => $ret);
   });
 
-  $r->get('/v1/jobs/stats' => sub {
+  $stats->get('/jobs')->name('stats_jobs')->to(cb => sub {
     my $c = shift;
 
     my $stats = $c->app->minion->backend->list_jobs(@_);
@@ -76,7 +79,8 @@ sub startup {
     $c->render(json => $ret);
   });
 
-  $r->get('/v1/job/enqueue' => sub {
+  my $job = $api->any('/job')->name('job');
+  $job->post->to(cb => sub {
     my $c = shift;
 
     my $task = $c->param("task");

@@ -196,7 +196,7 @@
             dataSource: new kendo.data.DataSource({
                 transport: {
                     read: {
-                        url: "<%= url_for('/v1/jobs/stats')->to_abs %>",
+                        url: "<%= url_for 'stats_jobs' %>",
                     }
                 }
             })
@@ -237,7 +237,7 @@
                 var formData = $(form).serialize();
                 console.log(formData);
 
-                $.getJSON("<%= url_for("/v1/job/enqueue") %>?" + formData, function(result) {
+                $.post("<%= url_for 'job' %>", formData, function(result) {
                     var template = kendo.template($('#enqueue-template').text());
                     var html = template({
                         task: $(element).find("input[name='task']").val(),
@@ -249,7 +249,7 @@
                     app.hideLoading();
 
                     $('#modalview-job-enqueue').data("kendoMobileModalView").open();
-                });
+                }, 'json');
             },
             close: function(e) {
                 $('#modalview-job-enqueue').data("kendoMobileModalView").close();
@@ -281,7 +281,7 @@
                             whence = (new Date()).getTime();
 
                             $.ajax({
-                                url: "<%= url_for("/v1/minion/stats") %>",
+                                url: "<%= url_for 'stats_minion' %>",
                                 dataType: 'json',
                                 async: true,
                                 success: function(result) {
@@ -352,7 +352,7 @@
             show: function(e) {
                 var model = e.view.model;
 
-                $.getJSON("<%= url_for("/v1/minion/stats") %>", function(result) {
+                $.getJSON("<%= url_for 'stats_minion' %>", function(result) {
                     var template = kendo.template($('#dashboard-template').text());
                     var html = template(result)
                     $('#dashboard-header').html(html);
@@ -418,7 +418,7 @@
                 dataSource: new kendo.data.DataSource({
                     transport: {
                         read: {
-                            url: "<%= url_for('/v1/workers/stats')->to_abs %>",
+                            url: "<%= url_for 'stats_workers' %>",
                         }
                     },
                     schema: {
