@@ -25,7 +25,7 @@ sub startup {
   $stats->get('/jobs')->to('#jobs')->name('stats_jobs');
 
   my $job = $api->any('/job')->to('Job#')->name('job');
-  $job->post->to('enqueue');
+  $job->post->to('#enqueue');
 }
 
 1;
