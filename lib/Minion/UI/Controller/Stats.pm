@@ -2,6 +2,8 @@ package Minion::UI::Controller::Stats;
 
 use Mojo::Base 'Mojolicious::Controller';
 
+use Mojo::JSON 'encode_json';
+
 sub minion {
   my $c = shift;
 
