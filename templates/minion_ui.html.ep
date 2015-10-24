@@ -5,14 +5,14 @@
     <link rel="stylesheet" href="http://kendo.cdn.telerik.com/2015.3.930/styles/kendo.common.core.min.css" />
     <link rel="stylesheet" href="http://kendo.cdn.telerik.com/2015.3.930/styles/kendo.common-nova.core.min.css" />
     <link rel="stylesheet" href="http://kendo.cdn.telerik.com/2015.3.930/styles/kendo.mobile.all.min.css" />
-    <link rel="stylesheet" href="/epoch.min.css" />
-    <link rel="stylesheet" href="/style.css" />
+    <link rel="stylesheet" href="/minion_ui/epoch.min.css" />
+    <link rel="stylesheet" href="/minion_ui/style.css" />
 
     <script src="http://kendo.cdn.telerik.com/2015.3.930/js/jquery.min.js"></script>
     <script src="http://kendo.cdn.telerik.com/2015.3.930/js/kendo.ui.core.min.js"></script>
 
-    <script src="/d3.min.js"></script>
-    <script src="/epoch.min.js"></script>
+    <script src="/minion_ui/d3.min.js"></script>
+    <script src="/minion_ui/epoch.min.js"></script>
 </head>
 <body>
 
@@ -120,7 +120,7 @@
                     <legend>Arguments</legend>
                     <textarea style="height: 50px;" placeholder="JSON goes here" name="args" class="k-valid"></textarea>
                 </fieldset>
-            </li>          
+            </li>
         </ul>
     </form>
 
@@ -134,7 +134,7 @@
             <a data-bind="events:{ click: close }" data-role="button" data-align="right">Close</a>
         </div>
     </div>
-    
+
     <script type="text/x-kendo-template" id="enqueue-template">
         <center>
         <h1>#: task #</h1>
@@ -174,7 +174,7 @@
 
                 $(id).kendoMobileListView({
                     dataSource: model.dataSource,
-                    pullToRefresh: true,            
+                    pullToRefresh: true,
                     template: $(template).text(),
                     click: function (e) {
                         var params = $.param({
@@ -286,7 +286,7 @@
                                 async: true,
                                 success: function(result) {
                                     var template = kendo.template($('#dashboard-template').text());
-                                    var html = template(result) 
+                                    var html = template(result)
                                     $('#dashboard-header').html(html);
 
                                     if (null != app.view().model.workerGraph) {
@@ -354,7 +354,7 @@
 
                 $.getJSON("<%= url_for("/v1/minion/stats") %>", function(result) {
                     var template = kendo.template($('#dashboard-template').text());
-                    var html = template(result) 
+                    var html = template(result)
                     $('#dashboard-header').html(html);
 
                     model.workerGraph = $('#minionWorker').epoch({
@@ -368,7 +368,7 @@
                             {
                                 label: "Inactive",
                                 values: [ { time: result.epoch, y: result.inactive_workers } ]
-                            } 
+                            }
                         ]
                     });
 
@@ -445,7 +445,7 @@
         },
     });
 
-    var app = new kendo.mobile.Application(document.body, { 
+    var app = new kendo.mobile.Application(document.body, {
         skin: "nova",
     });
 </script>

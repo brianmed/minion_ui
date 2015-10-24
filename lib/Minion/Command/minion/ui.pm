@@ -15,7 +15,7 @@ has usage => sub {
 sub run {
   my $command = shift;
 
-  # replace the app's router and then mount the monitor to /
+  # replace the app's router and then mount the ui to /
   $command->app
     ->routes(Mojolicious::Routes->new)
     ->plugin('Mojolicious::Plugin::Minion::UI' => { path => '/' });
