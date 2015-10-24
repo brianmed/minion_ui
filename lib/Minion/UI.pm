@@ -12,7 +12,12 @@ sub startup {
 
   $r->get('/' => {template => 'minion_ui'});
 
-  my $api = $r->any('/api/v1');
+  my $api = $r->under('/api/v1' => sub {
+    my $c = shift;
+    $c->stash('limit'  => $c->param('limit')  || 100);
+    $c->stash('offset' => $c->param('offset') || 0);
+    return 1;
+  });
 
   my $stats = $api->any('/stats')->to('Stats#');
   $stats->get('/minion')->to('#minion')->name('stats_minion');

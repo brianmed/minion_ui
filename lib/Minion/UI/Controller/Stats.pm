@@ -24,7 +24,7 @@ sub minion {
 sub workers {
   my $c = shift;
 
-  my $stats = $c->app->minion->backend->list_workers(@_);
+  my $stats = $c->app->minion->backend->list_workers(@{$c->stash}{qw/offset limit/});
 
   # $c->app->log->debug($c->dumper($stats));
 
@@ -44,7 +44,11 @@ sub workers {
 sub jobs {
   my $c = shift;
 
-  my $stats = $c->app->minion->backend->list_jobs(@_);
+  my $options = {
+    state => $c->param('state'),
+    task  => $c->param('task'),
+  };
+  my $stats = $c->app->minion->backend->list_jobs(@{$c->stash}{qw/offset limit/}, $options);
 
   # $c->app->log->debug($c->dumper($stats));
 
