@@ -15,69 +15,11 @@ sub startup {
   $r->get('/' => {template => 'minion_ui'});
 
   my $api = $r->any('/api/v1');
-  my $stats = $api->any('/stats');
 
-  $stats->get('/minion')->name('stats_minion')->to(cb => sub {
-    my $c = shift;
-
-    my $stats = $c->app->minion->stats;
-
-    my $ret = {
-      inactive_workers => $stats->{inactive_workers},
-      active_workers => $stats->{active_workers},
-      active_jobs => int($stats->{active_jobs}),
-      failed_jobs => int($stats->{failed_jobs}),
-      finished_jobs => int($stats->{finished_jobs}),
-      epoch => time,
-    };
-
-    $c->render(json => $ret);
-  });
-
-  $stats->get('/workers')->name('stats_workers')->to(cb => sub {
-    my $c = shift;
-
-    my $stats = $c->app->minion->backend->list_workers(@_);
-
-    # $c->app->log->debug($c->dumper($stats));
-
-    my $ret = [];
-
-    foreach my $worker (@{ $stats }) {
-      push(@{ $ret }, {
-        id => $worker->{id},
-        host => $worker->{host},
-        pid => $worker->{pid},
-      });
-    }
-
-    $c->render(json => $ret);
-  });
-
-  $stats->get('/jobs')->name('stats_jobs')->to(cb => sub {
-    my $c = shift;
-
-    my $stats = $c->app->minion->backend->list_jobs(@_);
-
-    # $c->app->log->debug($c->dumper($stats));
-
-    my $ret = [];
-
-    foreach my $job (@{ $stats }) {
-      push(@{ $ret }, {
-        args => encode_json($job->{args}),
-        id => $job->{id},
-        priority => $job->{priority},
-        state => $job->{state},
-        task => $job->{task},
-        queue => $job->{queue},
-      });
-
-      last if 30 <= @{ $ret };
-    }
-
-    $c->render(json => $ret);
-  });
+  my $stats = $api->any('/stats')->to('Stats#');
+  $stats->get('/minion')->to('#minion')->name('stats_minion');
+  $stats->get('/workers')->to('#workers')->name('stats_workers');
+  $stats->get('/jobs')->to('#jobs')->name('stats_jobs');
 
   my $job = $api->any('/job')->name('job');
   $job->post->to(cb => sub {
