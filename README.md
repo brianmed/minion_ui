@@ -1,16 +1,18 @@
-# Mojolicious::Lite Minion UI
+# Minion UI
 
-To get started edit this line to suite your needs:
+To get started either add the plugin to your app: 
 
 ```
-plugin Minion => {Pg => "postgresql://$ENV{DBI_USER}:$ENV{DBI_PASS}\@127.0.0.1/jobs"};
+plugin 'Minion::UI' => { path => '/minion_ui' };
 ```
   
-Then run:
+and visit the designated path or simply run the ui command
 
 ```
-$ perl minion_ui.pl daemon
+$ ./myapp.pl minion ui
 ```
+
+which takes the same arguments as the `daemon` command.
 
 ## Dashboard
 
@@ -19,4 +21,4 @@ $ perl minion_ui.pl daemon
 
 Released under the same terms as Perl itself.
 
-Copyright (c) 2015 Brian Medley
+Copyright (c) 2015 Joel Berger and Brian Medley
