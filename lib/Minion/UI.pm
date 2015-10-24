@@ -12,14 +12,14 @@ sub startup {
 
   $r->get('/' => {template => 'minion_ui'});
 
-  my $api = $r->under('/api/v1' => sub {
+  my $api = $r->any('/api/v1');
+
+  my $stats = $api->under('/stats' => sub {
     my $c = shift;
     $c->stash('limit'  => $c->param('limit')  || 100);
     $c->stash('offset' => $c->param('offset') || 0);
     return 1;
-  });
-
-  my $stats = $api->any('/stats')->to('Stats#');
+  })->to('Stats#');
   $stats->get('/minion')->to('#minion')->name('stats_minion');
   $stats->get('/workers')->to('#workers')->name('stats_workers');
   $stats->get('/jobs')->to('#jobs')->name('stats_jobs');
