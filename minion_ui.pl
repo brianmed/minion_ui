@@ -1,4 +1,4 @@
-#!/usr/bin/env perl
+#!/opt/perl
 
 use Mojolicious::Lite;
 
@@ -166,7 +166,7 @@ __DATA__
     </div>
     </div>
 
-    <center><p><h1>Workers</h1></p></center>
+    <center><p><h1><span id="num_workers"></span>Workers</h1></p></center>
 
     <ul id="listview-workers">
         <script type="text/x-kendo-template" id="listview-workers-template">
@@ -365,7 +365,6 @@ __DATA__
 
             init: function(e) {
                 $(function() {
-                    var inAjax = false;
                     var whence = (new Date()).getTime() - 4000; // start immediately
 
                     var workerData = {
@@ -379,7 +378,7 @@ __DATA__
                     function updWorkerData() {
                         var n = (new Date()).getTime() - whence;
 
-                        if ("Dashboard" === app.view().title && !inAjax && n >= 3000) {
+                        if ("Dashboard" === app.view().title && n >= 3000) {
                             whence = (new Date()).getTime();
 
                             $.ajax({
@@ -423,10 +422,11 @@ __DATA__
                                         app.view().model.minionOtherJobs.push(data);
                                     }
 
-                                    inAjax = false;
-                                },
-                                error: function() {
-                                    inAjax = false;
+                                    if ("Dashboard" === app.view().title) {
+                                        var m = app.view().model.workers;
+                                        var id = m.listview.id;
+                                        $(id).data("kendoMobileListView").dataSource.read();
+                                    }
                                 }
                             });
                         }
@@ -448,6 +448,15 @@ __DATA__
 
                         setTimeout(updWorkerData, 300);
                     }
+                });
+
+                var m = e.view.model.workers;
+                var id = m.listview.id;
+                var template = m.listview.template;
+
+                $(id).kendoMobileListView({
+                    dataSource: m.dataSource,
+                    template: $(template).text(),
                 });
             },
 
@@ -501,14 +510,9 @@ __DATA__
                     });
                 });
 
-                var m = model.workers;
+                var m = app.view().model.workers;
                 var id = m.listview.id;
-                var template = m.listview.template;
-
-                $(id).kendoMobileListView({
-                    dataSource: m.dataSource,
-                    template: $(template).text(),
-                });
+                $(id).data("kendoMobileListView").dataSource.read();
             },
 
             workers: {
@@ -535,8 +539,13 @@ __DATA__
                                 });
                             });
 
+                            $('#num_workers').html("");
+
                             if (0 === ret.length) {
                                 return [{ text: "No workers" }];
+                            }
+                            else {
+                                $('#num_workers').html(ret.length + " ");
                             }
 
                             return ret;
