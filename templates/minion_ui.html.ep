@@ -1,105 +1,3 @@
-#!/opt/perl
-
-use Mojolicious::Lite;
-
-use Mojo::JSON qw(encode_json decode_json);
-
-plugin Minion => {Pg => "postgresql://$ENV{DBI_USER}:$ENV{DBI_PASS}\@127.0.0.1/jobs"};
-
-get '/' => sub {
-    my $c = shift;
-
-    $c->render(template => 'slash');
-};
-
-get '/v1/minion/stats' => sub {
-    my $c = shift;
-
-    my $stats = $c->app->minion->stats;
-
-    my $ret = { 
-        inactive_workers => $stats->{inactive_workers},
-        active_workers => $stats->{active_workers},
-        active_jobs => int($stats->{active_jobs}),
-        failed_jobs => int($stats->{failed_jobs}),
-        finished_jobs => int($stats->{finished_jobs}),
-        epoch => time,
-    };
-
-    $c->render(json => $ret);
-};
-
-get '/v1/workers/stats' => sub {
-    my $c = shift;
-
-    my $stats = $c->app->minion->backend->list_workers(@_);
-
-    # $c->app->log->debug($c->dumper($stats));
-
-    my $ret = [];
-
-    foreach my $worker (@{ $stats }) {
-        push(@{ $ret }, { 
-            id => $worker->{id},
-            host => $worker->{host},
-            pid => $worker->{pid},
-        });
-    }
-
-    $c->render(json => $ret);
-};
-
-get '/v1/jobs/stats' => sub {
-    my $c = shift;
-
-    my $stats = $c->app->minion->backend->list_jobs(@_);
-
-    # $c->app->log->debug($c->dumper($stats));
-
-    my $ret = [];
-
-    foreach my $job (@{ $stats }) {
-        push(@{ $ret }, { 
-            args => encode_json($job->{args}),
-            id => $job->{id},
-            priority => $job->{priority},
-            state => $job->{state},
-            task => $job->{task},
-            queue => $job->{queue},
-        });
-
-        last if 30 <= @{ $ret };
-    }
-
-    $c->render(json => $ret);
-};
-
-get '/v1/job/enqueue' => sub {
-    my $c = shift;
-
-    my $task = $c->param("task");
-    my $queue = $c->param("queue");
-    my $priority = $c->param("priority");
-    my $delay = $c->param("delay");
-    my $args = decode_json($c->param("args") || "[]");
-
-    my $options = {};
-
-    $options->{priority} = $priority if $priority;
-    $options->{delay} = $delay if $delay;
-    $options->{queue} = $queue if $queue;
-
-    my $job_id = $c->app->minion->enqueue($task, $args, $options);
-
-    $c->render(json => {job_id => $job_id});
-};
-
-app->start;
-
-__DATA__
-
-@@ slash.html.ep
-
 <!DOCTYPE html>
 <html>
 <head>
@@ -107,14 +5,14 @@ __DATA__
     <link rel="stylesheet" href="http://kendo.cdn.telerik.com/2015.3.930/styles/kendo.common.core.min.css" />
     <link rel="stylesheet" href="http://kendo.cdn.telerik.com/2015.3.930/styles/kendo.common-nova.core.min.css" />
     <link rel="stylesheet" href="http://kendo.cdn.telerik.com/2015.3.930/styles/kendo.mobile.all.min.css" />
-    <link rel="stylesheet" href="/epoch.min.css" />
-    <link rel="stylesheet" href="/style.css" />
+    <link rel="stylesheet" href="/minion_ui/epoch.min.css" />
+    <link rel="stylesheet" href="/minion_ui/style.css" />
 
     <script src="http://kendo.cdn.telerik.com/2015.3.930/js/jquery.min.js"></script>
     <script src="http://kendo.cdn.telerik.com/2015.3.930/js/kendo.ui.core.min.js"></script>
 
-    <script src="/d3.min.js"></script>
-    <script src="/epoch.min.js"></script>
+    <script src="/minion_ui/d3.min.js"></script>
+    <script src="/minion_ui/epoch.min.js"></script>
 </head>
 <body>
 
@@ -222,7 +120,7 @@ __DATA__
                     <legend>Arguments</legend>
                     <textarea style="height: 50px;" placeholder="JSON goes here" name="args" class="k-valid"></textarea>
                 </fieldset>
-            </li>          
+            </li>
         </ul>
     </form>
 
@@ -236,7 +134,7 @@ __DATA__
             <a data-bind="events:{ click: close }" data-role="button" data-align="right">Close</a>
         </div>
     </div>
-    
+
     <script type="text/x-kendo-template" id="enqueue-template">
         <center>
         <h1>#: task #</h1>
@@ -276,7 +174,7 @@ __DATA__
 
                 $(id).kendoMobileListView({
                     dataSource: model.dataSource,
-                    pullToRefresh: true,            
+                    pullToRefresh: true,
                     template: $(template).text(),
                     click: function (e) {
                         var params = $.param({
@@ -298,7 +196,7 @@ __DATA__
             dataSource: new kendo.data.DataSource({
                 transport: {
                     read: {
-                        url: "<%= url_for('/v1/jobs/stats')->to_abs %>",
+                        url: "<%= url_for 'stats_jobs' %>",
                     }
                 }
             })
@@ -339,7 +237,7 @@ __DATA__
                 var formData = $(form).serialize();
                 console.log(formData);
 
-                $.getJSON("<%= url_for("/v1/job/enqueue") %>?" + formData, function(result) {
+                $.post("<%= url_for 'job' %>", formData, function(result) {
                     var template = kendo.template($('#enqueue-template').text());
                     var html = template({
                         task: $(element).find("input[name='task']").val(),
@@ -351,7 +249,7 @@ __DATA__
                     app.hideLoading();
 
                     $('#modalview-job-enqueue').data("kendoMobileModalView").open();
-                });
+                }, 'json');
             },
             close: function(e) {
                 $('#modalview-job-enqueue').data("kendoMobileModalView").close();
@@ -382,12 +280,12 @@ __DATA__
                             whence = (new Date()).getTime();
 
                             $.ajax({
-                                url: "<%= url_for("/v1/minion/stats") %>",
+                                url: "<%= url_for 'stats_minion' %>",
                                 dataType: 'json',
                                 async: true,
                                 success: function(result) {
                                     var template = kendo.template($('#dashboard-template').text());
-                                    var html = template(result) 
+                                    var html = template(result)
                                     $('#dashboard-header').html(html);
 
                                     if (null != app.view().model.workerGraph) {
@@ -463,9 +361,9 @@ __DATA__
             show: function(e) {
                 var model = e.view.model;
 
-                $.getJSON("<%= url_for("/v1/minion/stats") %>", function(result) {
+                $.getJSON("<%= url_for 'stats_minion' %>", function(result) {
                     var template = kendo.template($('#dashboard-template').text());
-                    var html = template(result) 
+                    var html = template(result)
                     $('#dashboard-header').html(html);
 
                     model.workerGraph = $('#minionWorker').epoch({
@@ -479,7 +377,7 @@ __DATA__
                             {
                                 label: "Inactive",
                                 values: [ { time: result.epoch, y: result.inactive_workers } ]
-                            } 
+                            }
                         ]
                     });
 
@@ -524,7 +422,7 @@ __DATA__
                 dataSource: new kendo.data.DataSource({
                     transport: {
                         read: {
-                            url: "<%= url_for('/v1/workers/stats')->to_abs %>",
+                            url: "<%= url_for 'stats_workers' %>",
                         }
                     },
                     schema: {
@@ -556,7 +454,7 @@ __DATA__
         },
     });
 
-    var app = new kendo.mobile.Application(document.body, { 
+    var app = new kendo.mobile.Application(document.body, {
         skin: "nova",
     });
 </script>
