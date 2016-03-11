@@ -1,9 +1,13 @@
 # Minion UI
 
-To get started either add the plugin to your app: 
+To get started put lib/ in your perl lib path somehow.
 
 ```
-plugin 'Minion::UI' => { path => '/minion_ui' };
+use Mojolicious::Lite;
+...
+plugin Minion => {Pg => "postgresql://$ENV{DBI_USER}:$ENV{DBI_PASS}\@127.0.0.1/jobs"};
+...
+app->start;
 ```
   
 and visit the designated path or simply run the ui command
@@ -16,9 +20,9 @@ which takes the same arguments as the `daemon` command.
 
 ## Dashboard
 
-<img  align="middle" src="http://bmedley.org/minion_ui_dashboard.png" width="50%" height="50%">
+<img align="middle" src="http://bmedley.org/minion_ui-002.png" width="50%" height="50%">
 
 
 Released under the same terms as Perl itself.
 
-Copyright (c) 2015 Joel Berger and Brian Medley
+Copyright (c) 2016 Joel Berger and Brian Medley
