@@ -19,4 +19,12 @@ app->minion->add_task(slow_log => sub {
     });
 });
 
+app->minion->add_task(fail => sub {
+    my ($job, $msg) = @_;
+
+    Mojo::IOLoop->timer(5 => sub {
+        die($msg);
+    });
+});
+
 app->start;

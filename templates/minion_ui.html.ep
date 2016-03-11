@@ -5,14 +5,14 @@
     <link rel="stylesheet" href="http://kendo.cdn.telerik.com/2015.3.930/styles/kendo.common.core.min.css" />
     <link rel="stylesheet" href="http://kendo.cdn.telerik.com/2015.3.930/styles/kendo.common-nova.core.min.css" />
     <link rel="stylesheet" href="http://kendo.cdn.telerik.com/2015.3.930/styles/kendo.mobile.all.min.css" />
-    <link rel="stylesheet" href="/minion_ui/epoch.min.css" />
+    <link rel="stylesheet" href="/minion_ui/epoch/css/epoch.css" />
     <link rel="stylesheet" href="/minion_ui/style.css" />
 
     <script src="http://kendo.cdn.telerik.com/2015.3.930/js/jquery.min.js"></script>
     <script src="http://kendo.cdn.telerik.com/2015.3.930/js/kendo.ui.core.min.js"></script>
 
     <script src="/minion_ui/d3.min.js"></script>
-    <script src="/minion_ui/epoch.min.js"></script>
+    <script src="/minion_ui/epoch/js/epoch.js"></script>
 </head>
 <body>
 
@@ -29,20 +29,25 @@
     <div id="dashboard-header">
     </div>
 
+    <style>
+        #minionWorker .bar.category1 { fill: #EC646A }
+        #minionWorker .bar.category2 { fill: #99C979 }
+    </style>
+
     <h3><b>Inactive and Active Workers</b></h3>
-    <div id="minionWorker" class="epoch" style="height: 200px; margin-top: 15px;" class="epoch"></div>
+    <div id="minionWorker" class="epoch" style="height: 200px; margin-top: 15px;"></div>
 
     <div class='legend' style="margin-left: 20px;">
     <div class='legend-scale'>
       <ul class='legend-labels'>
-        <li><span style='background:#ff7f0e;'></span>Inactive</li>
-        <li><span style='background:#1f77b4;'></span>Active</li>
+        <li><span style='background:#99C979;'></span>Inactive</li>
+        <li><span style='background:#EC646A;'></span>Active</li>
       </ul>
     </div>
     </div>
 
     <h3 style="margin-top: 20px;"><b>Active Jobs</b></h3>
-    <div id="minionActiveJobs" class="epoch" style="height: 200px; margin-top: 15px;" class="epoch"></div>
+    <div id="minionActiveJobs" class="epoch" style="height: 200px; margin-top: 15px;"></div>
 
     <div class='legend' style="margin-left: 20px;">
     <div class='legend-scale'>
@@ -52,14 +57,20 @@
     </div>
     </div>
 
+    <style>
+        #minionOtherJobs .category2 .area { fill: #03529B }
+
+        #minionOtherJobs .category1 .area { fill: #EC646A }
+    </style>
+
     <h3><b>Finished and Failed Jobs</b></h3>
-    <div id="minionOtherJobs" class="epoch" style="height: 200px; margin-top: 15px;" class="epoch"></div>
+    <div id="minionOtherJobs" class="epoch category20c" style="height: 200px; margin-top: 15px;"></div>
 
     <div class='legend' style="margin-left: 20px;">
     <div class='legend-scale'>
       <ul class='legend-labels'>
-        <li><span style='background:#ff7f0e;'></span>Finished</li>
-        <li><span style='background:#1f77b4;'></span>Failed</li>
+        <li><span style='background:#03529B;'></span>Finished</li>
+        <li><span style='background:#EC646A;'></span>Failed</li>
       </ul>
     </div>
     </div>
@@ -367,7 +378,7 @@
                     $('#dashboard-header').html(html);
 
                     model.workerGraph = $('#minionWorker').epoch({
-                        type: 'time.line',
+                        type: 'time.bar',
                         axes: ['left', 'bottom', 'right'],
                         data: [
                             {
