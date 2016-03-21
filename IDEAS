@@ -1,0 +1,9 @@
+Use websockets instead of polling
+
+Disable job running via command-line
+
+Encapsulate the public and template directories in the plugin
+
+Possibly move worker list to middle tab and switch between jobs and workers via a button
+
+Scroll back to view peak history
