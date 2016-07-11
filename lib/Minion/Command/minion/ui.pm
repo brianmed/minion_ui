@@ -18,7 +18,7 @@ sub run {
   # replace the app's router and then mount the ui to /
   $command->app
     ->routes(Mojolicious::Routes->new)
-    ->plugin('Mojolicious::Plugin::Minion::UI' => { path => '/' });
+    ->plugin('Mojolicious::Plugin::Minion::UI' => { path => '/minion_ui' });
 
   $command->SUPER::run(@_);
 }
