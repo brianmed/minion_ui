@@ -4,7 +4,7 @@ use Mojo::Base 'Mojolicious';
 
 use Minion;
 
-has minion => sub { Minion->new({File => 'minion.db'}) };
+has qw(minion); # => sub { Minion->new({File => 'minion.db'}) };
 
 sub startup {
   my $app = shift;
