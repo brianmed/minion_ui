@@ -17,137 +17,20 @@
 </head>
 <body>
 
-<div data-role="view" id="tabstrip-dashboard" data-title="Dashboard" data-layout="mobile-tabstrip" data-model="model.dashboard" data-show="model.dashboard.show" data-init="model.dashboard.init">
+<div data-role="view" id="drawer-dashboard" data-title="Dashboard" data-layout="mobile-drawer" data-model="model.dashboard" data-show="model.dashboard.show" data-init="model.dashboard.init">
     <style>
-.flex-container {
-    display: -webkit-flex;
-    display: flex;
+
+.container {
+    min-height: 100px;
 }
 
-.flex-item {
-    /* width: 120px; */
+.item {
+    min-width: 120px;
     height: 100%;
 	margin-top: 10px;
 	margin-left: 10px;
 	margin-right: 10px;
 	margin-bottom: 10px;
-}
-
-.push_button {
-	position: relative;
-	width:165px;
-	height:40px;
-	text-align:center;
-	color:#FFF;
-	text-decoration:none;
-	line-height:43px;
-	font-family:'Oswald', Helvetica;
-	display: block;
-	margin-top: 10px;
-	margin-left: 10px;
-	margin-right: 10px;
-	margin-bottom: 10px;
-}
-
-.push_button[data-badge]:after {
-   content:attr(data-badge);
-   position:absolute;
-   top:-10px;
-   right:-10px;
-   font-size:1.7em;
-   background:black;
-   color:white;
-   width:42px;height:42px;
-   text-align:center;
-   line-height:42px;
-   border-radius:50%;
-   box-shadow:0 0 1px #333;
-}
-
-.push_button:before {
-	background:#f0f0f0;
-	background-image:-webkit-gradient(linear, 0% 0%, 0% 100%, from(#D0D0D0), to(#f0f0f0));
-	
-	-webkit-border-radius:5px;
-	-moz-border-radius:5px;
-	border-radius:5px;
-	
-	-webkit-box-shadow:0 1px 2px rgba(0, 0, 0, .5) inset, 0 1px 0 #FFF; 
-	-moz-box-shadow:0 1px 2px rgba(0, 0, 0, .5) inset, 0 1px 0 #FFF; 
-	box-shadow:0 1px 2px rgba(0, 0, 0, .5) inset, 0 1px 0 #FFF;
-	
-	position: absolute;
-	content: "";
-	left: -6px; right: -6px;
-	top: -6px; bottom: -10px;
-	z-index: -1;
-}
-
-.push_button:active {
-	-webkit-box-shadow:0 1px 0 rgba(255, 255, 255, .5) inset, 0 -1px 0 rgba(255, 255, 255, .1) inset;
-	top:5px;
-}
-.push_button:active:before{
-	top: -11px;
-	bottom: -5px;
-	content: "";
-}
-
-.red {
-	text-shadow:-1px -1px 0 #A84155;
-	background: #D25068;
-	border:1px solid #D25068;
-	
-	background-image:-webkit-linear-gradient(top, #F66C7B, #D25068);
-	background-image:-moz-linear-gradient(top, #F66C7B, #D25068);
-	background-image:-ms-linear-gradient(top, #F66C7B, #D25068);
-	background-image:-o-linear-gradient(top, #F66C7B, #D25068);
-	background-image:linear-gradient(to bottom, #F66C7B, #D25068);
-	
-	-webkit-border-radius:5px;
-	-moz-border-radius:5px;
-	border-radius:5px;
-	
-	-webkit-box-shadow:0 1px 0 rgba(255, 255, 255, .5) inset, 0 -1px 0 rgba(255, 255, 255, .1) inset, 0 4px 0 #AD4257, 0 4px 2px rgba(0, 0, 0, .5);
-	-moz-box-shadow:0 1px 0 rgba(255, 255, 255, .5) inset, 0 -1px 0 rgba(255, 255, 255, .1) inset, 0 4px 0 #AD4257, 0 4px 2px rgba(0, 0, 0, .5);
-	box-shadow:0 1px 0 rgba(255, 255, 255, .5) inset, 0 -1px 0 rgba(255, 255, 255, .1) inset, 0 4px 0 #AD4257, 0 4px 2px rgba(0, 0, 0, .5);
-}
-
-.red:hover {
-	background: #F66C7B;
-	background-image:-webkit-linear-gradient(top, #D25068, #F66C7B);
-	background-image:-moz-linear-gradient(top, #D25068, #F66C7B);
-	background-image:-ms-linear-gradient(top, #D25068, #F66C7B);
-	background-image:-o-linear-gradient(top, #D25068, #F66C7B);
-	background-image:linear-gradient(top, #D25068, #F66C7B);
-}
-
-.blue {
-	text-shadow:-1px -1px 0 #2C7982;
-	background: #3EACBA;
-	border:1px solid #379AA4;
-	background-image:-webkit-linear-gradient(top, #48C6D4, #3EACBA);
-	background-image:-moz-linear-gradient(top, #48C6D4, #3EACBA);
-	background-image:-ms-linear-gradient(top, #48C6D4, #3EACBA);
-	background-image:-o-linear-gradient(top, #48C6D4, #3EACBA);
-	background-image:linear-gradient(top, #48C6D4, #3EACBA);
-	
-	-webkit-border-radius:5px;
-	-moz-border-radius:5px;
-	border-radius:5px;
-	
-	-webkit-box-shadow:0 1px 0 rgba(255, 255, 255, .5) inset, 0 -1px 0 rgba(255, 255, 255, .1) inset, 0 4px 0 #338A94, 0 4px 2px rgba(0, 0, 0, .5);
-	-moz-box-shadow:0 1px 0 rgba(255, 255, 255, .5) inset, 0 -1px 0 rgba(255, 255, 255, .1) inset, 0 4px 0 #338A94, 0 4px 2px rgba(0, 0, 0, .5);
-	box-shadow:0 1px 0 rgba(255, 255, 255, .5) inset, 0 -1px 0 rgba(255, 255, 255, .1) inset, 0 4px 0 #338A94, 0 4px 2px rgba(0, 0, 0, .5);
-}
-
-.blue:hover {
-	background: #48C6D4;
-	background-image:-webkit-linear-gradient(top, #3EACBA, #48C6D4);
-	background-image:-moz-linear-gradient(top, #3EACBA, #48C6D4);
-	background-image:-ms-linear-gradient(top, #3EACBA, #48C6D4);
-	background-image:-o-linear-gradient(top, #3EACBA, #48C6D4);
-	background-image:linear-gradient(top, #3EACBA, #48C6D4);
 }
 
 .headers {
@@ -165,7 +48,14 @@
 	margin-left: 10px;
 	margin-right: 10px;
 	margin-bottom: 10px;
+}
+
+.headers-inline {
     display: inline;
+}
+
+.headers-block {
+    display: block;
 }
 
 .headers-start {
@@ -246,7 +136,7 @@
 }
     </style>
 
-    <ul data-role="actionsheet" id="inboxActions" data-open="onOpen" data-popup='{"direction": "left"}'>
+    <ul data-role="actionsheet" id="inboxActions" data-popup='{"direction": "left"}'>
         <li class="km-actionsheet-title"><strong>Graphs</strong></li>
         <li><a data-action="showGraphFinishedFailedJobs">Finished, Failed Jobs</a></li>
         <li><a data-action="showGraphActiveJobs">Active Jobs</a></li>
@@ -257,23 +147,32 @@
         # var jobs = finished_jobs + failed_jobs + active_jobs; #
         # var workers = inactive_workers + active_workers; #
 
-        <div class="flex-container">
-            <div class="flex-item">
-                <a data-rel="actionsheet" data-role="button" href="\\#inboxActions">
-<div class="box">
-   <div class="ribbon"><span>TAP</span></div>
-                    <img src="/minion_ui/fingerprint_x120.png"/>
-</div>
-                </a>
-            </div>
+        <div class="headers headers-start headers-inline">Active:</div>
+        <div class="headers headers-left headers-inline" data-badge="${active_jobs}">Jobs</div>
+        <div class="headers headers-inline" data-badge="${active_workers}">Workers</div>
+        <br/>
 
-            <div class="headers headers-start">Active:</div>
-            <div class="headers headers-left" data-badge="${active_jobs}">Jobs</div>
-            <div class="headers" data-badge="${active_workers}">Workers</div>
-        </div>
+        <div class="headers headers-start headers-inline">Jobs:</div>
+        <div class="headers headers-left headers-inline" data-badge="${finished_jobs}">Finished</div>
+        <div class="headers headers-inline" data-badge="${failed_jobs}">Failed</div>
+        <br/>
+
+        <div class="headers headers-start headers-inline">Inactive:</div>
+        <div class="headers headers-inline" data-badge="${inactive_workers}">Workers</div>
     </script>
 
-    <div id="dashboard-header"></div>
+    <div class="container" id="flex-ribbon">
+        <div class="item" id="div-ribbon" style="float: left;">
+                <a id="anchor-ribbon" data-rel="actionsheet" data-role="button" href="#inboxActions" style="border: 0">
+                    <div class="box" id="box-ribbon">
+                       <div class="ribbon" id="ribbon-ribbon"><span>TAP</span></div>
+                        <img id="img-ribbon" src="/minion_ui/fingerprint_x120.png"/>
+                    </div>
+                </a>
+        </div>
+
+        <div id="dashboard-header" style="float: left;"></div>
+    </div>
 
     <style>
         #minionWorker .bar.category1 { fill: #EC646A }
@@ -283,7 +182,7 @@
         }
     </style>
 
-    <div style="margin-left: 10px" id="inactive-active-workers">
+    <div style="margin-left: 10px; clear: left;" id="inactive-active-workers">
         <h3><b>Inactive and Active Workers</b></h3>
         <div id="minionWorker" class="epoch" style="height: 200px; margin-top: 15px;"></div>
 
@@ -297,7 +196,7 @@
         </div>
     </div>
 
-    <div style="display: none; margin-left: 10px" id="active-jobs">
+    <div style="display: none; margin-left: 10px; clear: left;" id="active-jobs">
         <h3 style="margin-top: 20px;"><b>Active Jobs</b></h3>
         <div id="minionActiveJobs" class="epoch" style="height: 200px; margin-top: 15px;"></div>
 
@@ -310,7 +209,7 @@
         </div>
     </div>
 
-    <div style="display: none; margin-left: 10px" id="finished-failed-jobs">
+    <div style="display: none; margin-left: 10px; clear: left;" id="finished-failed-jobs">
         <style>
             #minionOtherJobs .category2 .area { fill: #03529B }
 
@@ -343,7 +242,7 @@
     </ul>
 </div>
 
-<div data-role="view" id="tabstrip-jobs" data-title="Jobs" data-layout="mobile-tabstrip" data-model="model.jobs" data-init="model.jobs.init">
+<div data-role="view" id="drawer-jobs" data-title="Jobs" data-layout="mobile-drawer" data-model="model.jobs" data-init="model.jobs.init">
     <ul id="listview-jobs">
         <script type="text/x-kendo-template" id="listview-jobs-template">
             <a data-role="button" class="km-primary km-button-right km-icon-button"><span class="km-icon km-refresh"></span></a>
@@ -358,7 +257,7 @@
     </ul>
 </div>
 
-<div data-role="view" id="tabstrip-actions" data-title="Actions" data-layout="mobile-tabstrip" data-use-native-scrolling="true" data-model="model.actions" data-show="model.actions.show">
+<div data-role="view" id="drawer-actions" data-title="Actions" data-layout="mobile-drawer" data-use-native-scrolling="true" data-model="model.actions" data-show="model.actions.show">
      <form>
         <ul data-role="listview" data-style="inset">
             <li>
@@ -412,22 +311,30 @@
     <div id="enqueue-results"></div>
 </div>
 
-<div data-role="layout" data-id="mobile-tabstrip">
+<div data-role="drawer" id="minion-drawer" style="width: 20em" data-views="['drawer-dashboard', 'drawer-jobs', 'drawer-actions']">
     <header data-role="header">
         <div data-role="navbar">
+            <a data-align="left" data-role="button" class="nav-button" data-icon="contacts"></a>
+            <span data-role="view-title">My Mail</span>
+            <a data-align="right" data-role="button" class="nav-button" data-icon="settings"></a>
+        </div>
+    </header>
+    <ul data-role="listview" class="km-listview-icons">
+        <li data-icon="globe"><a href="#drawer-dashboard" data-transition="none">Dashboard</a></li>
+        <li data-icon="history"><a href="#drawer-jobs" data-transition="none">Jobs</a></li>
+        <li data-icon="action"><a href="#drawer-actions" data-transition="none">Actions</a></li>
+    </ul>
+</div>
+
+<div data-role="layout" data-id="mobile-drawer">
+    <header data-role="header">
+        <div data-role="navbar">
+            <a data-role="button" data-rel="drawer" href="#minion-drawer" data-icon="drawer-icon" data-align="left"></a>
             <span data-role="view-title"></span>
         </div>
     </header>
 
-    <p>TabStrip</p>
-
-    <div data-role="footer">
-        <div data-role="tabstrip">
-            <a href="#tabstrip-dashboard" data-icon="globe">Dashboard</a>
-            <a href="#tabstrip-jobs" data-icon="history">Jobs</a>
-            <a href="#tabstrip-actions" data-icon="action">Actions</a>
-        </div>
-    </div>
+    <p>Content</p>
 </div>
 
 <script>
@@ -442,6 +349,12 @@
 
     function showGraphInactiveActiveWorkers() {
         showGraph('#inactive-active-workers');
+    }
+
+    function fingerPrintPress() {
+        alert("HI");
+
+        $('#anchor-ribbon').data("kendoMobileActionSheet").open();
     }
 
     function showGraph(graph) {
@@ -496,7 +409,7 @@
                             queue: e.dataItem.queue,
                             args: e.dataItem.args,
                         });
-                        app.navigate("#tabstrip-actions?" + params, "slide");
+                        app.navigate("#drawer-actions?" + params, "slide");
                     },
                 });
             },
@@ -575,6 +488,38 @@
             minionOtherJobs: null,
 
             init: function(e) {
+                /*
+                $('#div-ribbon').on("touchstart mousedown", function() {
+                    alert("HI");
+                    $('#anchor-ribbon').data("kendoMobileActionSheet").open();
+                });
+
+                $('#box-ribbon').on("touchstart mousedown", function() {
+                    alert("HI");
+                    $('#anchor-ribbon').data("kendoMobileActionSheet").open();
+                });
+
+                $('#ribbon-ribbon').on("touchstart mousedown", function() {
+                    alert("HI");
+                    $('#anchor-ribbon').data("kendoMobileActionSheet").open();
+                });
+
+                $('#img-ribbon').on("touchstart mousedown", function() {
+                    alert("HI");
+                    $('#anchor-ribbon').data("kendoMobileActionSheet").open();
+                });
+
+                $('#flex-ribbon').on("touchstart mousedown", function() {
+                    alert("HI");
+                    $('#anchor-ribbon').data("kendoMobileActionSheet").open();
+                });
+
+                $('#anchor-ribbon').on("touchstart mousedown", function() {
+                    alert("HI");
+                    $('#anchor-ribbon').data("kendoMobileActionSheet").open();
+                });
+                */
+
                 $(function() {
                     var whence = (new Date()).getTime() - 4000; // start immediately
 
