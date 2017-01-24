@@ -25,7 +25,7 @@
 }
 
 .flex-item {
-    width: 165px;
+    /* width: 120px; */
     height: 100%;
 	margin-top: 10px;
 	margin-left: 10px;
@@ -149,30 +149,79 @@
 	background-image:-o-linear-gradient(top, #3EACBA, #48C6D4);
 	background-image:linear-gradient(top, #3EACBA, #48C6D4);
 }
+
+.headers {
+	position: relative;
+	min-width:65px;
+	height:40px;
+	text-align:center;
+	color:#666;
+	text-decoration:none;
+	line-height:43px;
+	font-family: "Lucida Sans Typewriter", "Lucida Console", monaco, "Bitstream Vera Sans Mono", monospace;
+	font-weight: bold;
+	display: block;
+	margin-top: 15px;
+	margin-left: 10px;
+	margin-right: 10px;
+	margin-bottom: 10px;
+    display: inline;
+}
+
+.headers-start {
+	margin-left: 0px;
+	margin-right: 0px;
+    text-decoration: underline;
+}
+
+.headers-left {
+	margin-left: 0px;
+}
+
+.headers-right {
+	margin-left: 20px;
+}
+
+.headers[data-badge]:after {
+   content:attr(data-badge);
+   position:absolute;
+   font-size:1.0em;
+   background:black;
+   color:white;
+   width:21px;height:21px;
+   text-align:center;
+   line-height:21px;
+   border-radius:50%;
+   margin-top: 5px;
+   box-shadow:0 0 1px #333;
+}
     </style>
 
+    <ul data-role="actionsheet" id="inboxActions" data-open="onOpen" data-popup='{"direction": "left"}'>
+        <li class="km-actionsheet-title"><strong>Graphs</strong></li>
+        <li><a data-action="showGraphFinishedFailedJobs">Finished, Failed Jobs</a></li>
+        <li><a data-action="showGraphActiveJobs">Active Jobs</a></li>
+        <li><a data-action="showGraphInactiveActiveWorkers">Inactive, Active Workers</a></li>
+    </ul>
+
     <script type="text/x-kendo-template" id="dashboard-template">
-        <div class="flex-container">
-            <div class="flex-item">
-                <a href="\#" onclick="showGraph('\#finished-failed-jobs')" class="push_button red" data-badge="${finished_jobs}">Finished Jobs</a>
-            </div>
-            <div class="flex-item">
-                <a href="\#" onclick="showGraph('\#finished-failed-jobs')" class="push_button red" data-badge="${failed_jobs}">Failed Jobs</a>
-            </div>
-        </div>
+        # var jobs = finished_jobs + failed_jobs + active_jobs; #
+        # var workers = inactive_workers + active_workers; #
 
         <div class="flex-container">
             <div class="flex-item">
-                <a href="\#" onclick="showGraph('\#active-jobs')" class="push_button blue" data-badge="${active_jobs}">Active Jobs</a>
+                <a data-rel="actionsheet" data-role="button" href="\\#inboxActions">
+                    <img src="/minion_ui/fingerprint_x120.png"/>
+                </a>
             </div>
-            <div class="flex-item">
-                <a href="\#" onclick="showGraph('\#inactive-active-workers')" class="push_button blue" data-badge="${inactive_workers}" style="">Inactive Workers</a>
-            </div>
+
+            <div class="headers headers-start">Active:</div>
+            <div class="headers headers-left" data-badge="${active_jobs}">Jobs</div>
+            <div class="headers" data-badge="${active_workers}">Workers</div>
         </div>
     </script>
 
-    <div id="dashboard-header">
-    </div>
+    <div id="dashboard-header"></div>
 
     <style>
         #minionWorker .bar.category1 { fill: #EC646A }
@@ -330,7 +379,24 @@
 </div>
 
 <script>
+    // Eww
+    function showGraphFinishedFailedJobs() {
+        showGraph('#finished-failed-jobs');
+    }
+
+    function showGraphActiveJobs() {
+        showGraph('#active-jobs');
+    }
+
+    function showGraphInactiveActiveWorkers() {
+        showGraph('#inactive-active-workers');
+    }
+
     function showGraph(graph) {
+        // Finished, Failed Jobs
+        // Active Jobs
+        // Inactive, Active Workers
+
         var possibleGraphs = [
             '\#finished-failed-jobs',
             '\#active-jobs',

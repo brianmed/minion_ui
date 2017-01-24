@@ -14,6 +14,7 @@ sub register {
 
   my $minion = eval { $app->minion } || croak 'App does not have a minion attached';
   my $ui = Mojo::Server->new->build_app('Minion::UI')->minion($minion);
+  $ui->renderer->cache->max_keys(0);
 
   my $base = catdir dirname(__FILE__), 'MinionUIAssets';
   push @{$ui->renderer->paths}, catdir($base, 'templates');
