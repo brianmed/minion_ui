@@ -20,7 +20,7 @@ which takes the same arguments as the `daemon` command.
 
 ## Dashboard
 
-<img align="middle" src="http://bmedley.org/minion_ui-002.png" width="50%" height="50%">
+<img align="middle" src="http://bmedley.org/adhoc/2017-01-23/minion_ui-2017-01-23.png" width="50%" height="50%">
 
 
 Released under the same terms as Perl itself.
