@@ -93,6 +93,14 @@
   }
 
     @media screen and (min-width: 481px) {
+        #dashboard-header {
+            width: 100%;
+        }
+
+        #dashboard-header table {
+            margin: auto;
+        }
+
         .item {
             display: none;
         }
