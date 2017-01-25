@@ -54,6 +54,7 @@
   @media screen and (max-width: 600px) {
     table {
       border: 0;
+      marbin: auto;
     }
 
     table thead {
@@ -207,9 +208,7 @@
                 </a>
         </div>
 
-        <center>
         <div id="dashboard-header"></div>
-        </center>
     </div>
 
     <style>
