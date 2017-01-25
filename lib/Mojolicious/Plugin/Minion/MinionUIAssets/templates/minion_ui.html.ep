@@ -16,8 +16,6 @@
     <script src="/minion_ui/epoch/js/epoch.js"></script>
 
     <style>
-        @import "http://fonts.googleapis.com/css?family=Montserrat:300,400,700";
-
         body {
           padding: 0 2em;
           font-family: Montserrat, sans-serif;
@@ -71,7 +69,7 @@
       display: block;
       text-align: right;
       font-size: 13px;
-      border-bottom: 1px dotted #ccc;
+      border-bottom: 1px solid #ccc;
     }
 
     table td:last-child {
@@ -88,7 +86,47 @@
     .row {
         width: 80px;
     }
+
+    .col {
+        margin-left: 10px;
+    }
   }
+
+    @media screen and (min-width: 481px) {
+        .item {
+            display: none;
+        }
+
+        #inactive-active-workers {
+            display: inline-block;
+        }
+
+        #active-jobs {
+            display: inline-block;
+        }
+
+        #finished-failed-jobs {
+            display: inline-block;
+        }
+    }
+
+    @media screen and (max-width: 480px) {
+        .item {
+            display: inline-block;
+        }
+
+        #inactive-active-workers {
+            display: block;
+        }
+
+        #active-jobs {
+            display: none;
+        }
+
+        #finished-failed-jobs {
+            display: none;
+        }
+    }
     </style>
 </head>
 <body>
@@ -101,7 +139,6 @@
 
 .item {
     min-width: 100px;
-    height: 100%;
 	margin-top: 10px;
 	margin-left: 10px;
 	margin-right: 10px;
@@ -136,7 +173,7 @@
   background: linear-gradient(#2989d8 0%, #1e5799 100%);
   box-shadow: 0 3px 10px -5px rgba(0, 0, 0, 1);
   position: absolute;
-  top: 19px; right: -21px;
+  top: 24px; right: -21px;
 }
 .ribbon span::before {
   content: "";
@@ -198,9 +235,9 @@
         </table>
     </script>
 
-    <div class="container" id="flex-ribbon">
-        <div class="item" style="float: left;">
-                <a data-rel="actionsheet" data-role="button" href="#inboxActions" style="border: 0">
+    <div class="container">
+        <div class="item" style="vertical-align: top;">
+                <a data-rel="actionsheet" data-role="button" href="#inboxActions" style="border: 0; vertical-align: middle !important;">
                     <div class="box">
                        <div class="ribbon"><span>TAP</span></div>
                         <img src="/minion_ui/fingerprint_x120.png"/>
@@ -208,7 +245,7 @@
                 </a>
         </div>
 
-        <div id="dashboard-header"></div>
+        <div id="dashboard-header" style="display: inline-block;"></div>
     </div>
 
     <style>
@@ -219,7 +256,7 @@
         }
     </style>
 
-    <div style="margin-left: 5px; clear: left;" id="inactive-active-workers">
+    <div style="margin-left: 5px;" id="inactive-active-workers">
         <h3><b>Inactive and Active Workers</b></h3>
         <div id="minionWorker" class="epoch" style="height: 200px; margin-top: 15px;"></div>
 
@@ -233,8 +270,8 @@
         </div>
     </div>
 
-    <div style="display: none; margin-left: 10px; clear: left;" id="active-jobs">
-        <h3 style="margin-top: 20px;"><b>Active Jobs</b></h3>
+    <div style="margin-left: 10px;" id="active-jobs">
+        <h3><b>Active Jobs</b></h3>
         <div id="minionActiveJobs" class="epoch" style="height: 200px; margin-top: 15px;"></div>
 
         <div class='legend' style="margin-left: 20px;">
@@ -246,7 +283,7 @@
         </div>
     </div>
 
-    <div style="display: none; margin-left: 10px; clear: left;" id="finished-failed-jobs">
+    <div style="margin-left: 10px;" id="finished-failed-jobs">
         <style>
             #minionOtherJobs .category2 .area { fill: #03529B }
 
