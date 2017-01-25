@@ -14,76 +14,97 @@
 
     <script src="/minion_ui/d3.min.js"></script>
     <script src="/minion_ui/epoch/js/epoch.js"></script>
+
+    <style>
+        @import "http://fonts.googleapis.com/css?family=Montserrat:300,400,700";
+
+        body {
+          padding: 0 2em;
+          font-family: Montserrat, sans-serif;
+          -webkit-font-smoothing: antialiased;
+          text-rendering: optimizeLegibility;
+          color: #444;
+          background: #eee;
+        }
+
+  table {
+    border: 0;
+    margin:0;
+    padding:0;
+    border-collapse: collapse;
+    border-spacing: 0;
+  }
+
+  table tr {
+    border: 0;
+    padding: 5px;
+  }
+
+  table th, table td {
+    padding: 10px;
+    text-align: center;
+  }
+
+  table th {
+    text-transform: uppercase;
+    font-size: 14px;
+    letter-spacing: 1px;
+  }
+
+  @media screen and (max-width: 600px) {
+    table {
+      border: 0;
+    }
+
+    table thead {
+      display: none;
+    }
+
+    table tr {
+      margin-bottom: 10px;
+      display: inline-table;
+      border-bottom: 0;
+    }
+
+    table td {
+      display: block;
+      text-align: right;
+      font-size: 13px;
+      border-bottom: 1px dotted #ccc;
+    }
+
+    table td:last-child {
+      border-bottom: 0;
+    }
+
+    .label:before {
+      content: attr(data-label);
+      float: left;
+      text-transform: uppercase;
+      font-weight: bold;
+    }
+
+    .row {
+        width: 80px;
+    }
+  }
+    </style>
 </head>
 <body>
 
 <div data-role="view" id="drawer-dashboard" data-title="Dashboard" data-layout="mobile-drawer" data-model="model.dashboard" data-show="model.dashboard.show" data-init="model.dashboard.init">
     <style>
-
 .container {
     min-height: 100px;
 }
 
 .item {
-    min-width: 120px;
+    min-width: 100px;
     height: 100%;
 	margin-top: 10px;
 	margin-left: 10px;
 	margin-right: 10px;
 	margin-bottom: 10px;
-}
-
-.headers {
-	position: relative;
-	min-width:65px;
-	height:40px;
-	text-align:center;
-	color:#666;
-	text-decoration:none;
-	line-height:43px;
-	font-family: "Lucida Sans Typewriter", "Lucida Console", monaco, "Bitstream Vera Sans Mono", monospace;
-	font-weight: bold;
-	display: block;
-	margin-top: 15px;
-	margin-left: 10px;
-	margin-right: 10px;
-	margin-bottom: 10px;
-}
-
-.headers-inline {
-    display: inline;
-}
-
-.headers-block {
-    display: block;
-}
-
-.headers-start {
-	margin-left: 0px;
-	margin-right: 0px;
-    text-decoration: underline;
-}
-
-.headers-left {
-	margin-left: 0px;
-}
-
-.headers-right {
-	margin-left: 20px;
-}
-
-.headers[data-badge]:after {
-   content:attr(data-badge);
-   position:absolute;
-   font-size:1.0em;
-   background:black;
-   color:white;
-   width:21px;height:21px;
-   text-align:center;
-   line-height:21px;
-   border-radius:50%;
-   margin-top: 5px;
-   box-shadow:0 0 1px #333;
 }
 
 .box {
@@ -147,31 +168,48 @@
         # var jobs = finished_jobs + failed_jobs + active_jobs; #
         # var workers = inactive_workers + active_workers; #
 
-        <div class="headers headers-start headers-inline">Active:</div>
-        <div class="headers headers-left headers-inline" data-badge="${active_jobs}">Jobs</div>
-        <div class="headers headers-inline" data-badge="${active_workers}">Workers</div>
-        <br/>
-
-        <div class="headers headers-start headers-inline">Jobs:</div>
-        <div class="headers headers-left headers-inline" data-badge="${finished_jobs}">Finished</div>
-        <div class="headers headers-inline" data-badge="${failed_jobs}">Failed</div>
-        <br/>
-
-        <div class="headers headers-start headers-inline">Inactive:</div>
-        <div class="headers headers-inline" data-badge="${inactive_workers}">Workers</div>
+        <table style="margin-top: 3px;">
+          <thead>
+            <tr>
+              <th>Active</th>
+              <th>Active</th>
+              <th>Jobs</th>
+              <th>Jobs</td>
+              <th>Inactive</td>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="label" data-label="Active">Jobs</td>
+              <td class="label" data-label="Active">Workers</td>
+              <td class="label" data-label="Jobs">Finished</td>
+              <td class="label" data-label="Jobs">Failed</td>
+              <td class="label" data-label="Inactive">&nbsp;&nbsp;Workers</td>
+            </tr>
+            <tr>
+              <td class="col">${active_jobs}</td>
+              <td class="col">${active_workers}</td>
+              <td class="col">${finished_jobs}</td>
+              <td class="col">${failed_jobs}</td>
+              <td class="col">${inactive_workers}</td>
+            </tr>
+          </tbody>
+        </table>
     </script>
 
     <div class="container" id="flex-ribbon">
-        <div class="item" id="div-ribbon" style="float: left;">
-                <a id="anchor-ribbon" data-rel="actionsheet" data-role="button" href="#inboxActions" style="border: 0">
-                    <div class="box" id="box-ribbon">
-                       <div class="ribbon" id="ribbon-ribbon"><span>TAP</span></div>
-                        <img id="img-ribbon" src="/minion_ui/fingerprint_x120.png"/>
+        <div class="item" style="float: left;">
+                <a data-rel="actionsheet" data-role="button" href="#inboxActions" style="border: 0">
+                    <div class="box">
+                       <div class="ribbon"><span>TAP</span></div>
+                        <img src="/minion_ui/fingerprint_x120.png"/>
                     </div>
                 </a>
         </div>
 
-        <div id="dashboard-header" style="float: left;"></div>
+        <center>
+        <div id="dashboard-header"></div>
+        </center>
     </div>
 
     <style>
@@ -182,7 +220,7 @@
         }
     </style>
 
-    <div style="margin-left: 10px; clear: left;" id="inactive-active-workers">
+    <div style="margin-left: 5px; clear: left;" id="inactive-active-workers">
         <h3><b>Inactive and Active Workers</b></h3>
         <div id="minionWorker" class="epoch" style="height: 200px; margin-top: 15px;"></div>
 
@@ -351,12 +389,6 @@
         showGraph('#inactive-active-workers');
     }
 
-    function fingerPrintPress() {
-        alert("HI");
-
-        $('#anchor-ribbon').data("kendoMobileActionSheet").open();
-    }
-
     function showGraph(graph) {
         // Finished, Failed Jobs
         // Active Jobs
@@ -488,38 +520,6 @@
             minionOtherJobs: null,
 
             init: function(e) {
-                /*
-                $('#div-ribbon').on("touchstart mousedown", function() {
-                    alert("HI");
-                    $('#anchor-ribbon').data("kendoMobileActionSheet").open();
-                });
-
-                $('#box-ribbon').on("touchstart mousedown", function() {
-                    alert("HI");
-                    $('#anchor-ribbon').data("kendoMobileActionSheet").open();
-                });
-
-                $('#ribbon-ribbon').on("touchstart mousedown", function() {
-                    alert("HI");
-                    $('#anchor-ribbon').data("kendoMobileActionSheet").open();
-                });
-
-                $('#img-ribbon').on("touchstart mousedown", function() {
-                    alert("HI");
-                    $('#anchor-ribbon').data("kendoMobileActionSheet").open();
-                });
-
-                $('#flex-ribbon').on("touchstart mousedown", function() {
-                    alert("HI");
-                    $('#anchor-ribbon').data("kendoMobileActionSheet").open();
-                });
-
-                $('#anchor-ribbon').on("touchstart mousedown", function() {
-                    alert("HI");
-                    $('#anchor-ribbon').data("kendoMobileActionSheet").open();
-                });
-                */
-
                 $(function() {
                     var whence = (new Date()).getTime() - 4000; // start immediately
 
@@ -637,7 +637,7 @@
                                 values: [ { time: result.epoch, y: result.inactive_workers } ]
                             }
                         ],
-                        width: 400
+                        width: 380
                     });
 
                     model.minionActiveJobs = $('#minionActiveJobs').epoch({
@@ -649,7 +649,7 @@
                                 values: [ { time: result.epoch, y: result.active_jobs } ]
                             }
                         ],
-                        width: 400
+                        width: 380
                     });
 
                     model.minionOtherJobs = $('#minionOtherJobs').epoch({
@@ -665,7 +665,7 @@
                                 values: [ { time: result.epoch, y: result.finished_jobs } ]
                             },
                         ],
-                        width: 400
+                        width: 380
                     });
                 });
 
