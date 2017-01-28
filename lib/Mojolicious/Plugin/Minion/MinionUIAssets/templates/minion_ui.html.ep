@@ -47,6 +47,7 @@
     text-transform: uppercase;
     font-size: 14px;
     letter-spacing: 1px;
+    background: #99CC66;
   }
 
   @media screen and (max-width: 600px) {
@@ -76,11 +77,17 @@
       border-bottom: 0;
     }
 
+    .label {
+      background: #99CC66;
+      text-decoration: underline;
+    }
+
     .label:before {
       content: attr(data-label);
       float: left;
       text-transform: uppercase;
       font-weight: bold;
+      margin-right: 6px;
     }
 
     .row {
@@ -230,7 +237,7 @@
               <td class="label" data-label="Active">Workers</td>
               <td class="label" data-label="Jobs">Finished</td>
               <td class="label" data-label="Jobs">Failed</td>
-              <td class="label" data-label="Inactive">&nbsp;&nbsp;Workers</td>
+              <td class="label" data-label="Inactive">Workers</td>
             </tr>
             <tr>
               <td class="col">${active_jobs}</td>
